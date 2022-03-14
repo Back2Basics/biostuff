@@ -1,0 +1,41 @@
+However, in some circumstances, we might want to allow characters other than A,T,G and C in our DNA sequences. Take a look at this table showing the set of standard IUPAC ambiguity codes:
+
+Nucleotide Code:  Base:
+----------------  -----
+A.................Adenine
+C.................Cytosine
+G.................Guanine
+T (or U)..........Thymine (or Uracil)
+R.................A or G
+Y.................C or T
+S.................G or C
+W.................A or T
+K.................G or T
+M.................A or C
+B.................C or G or T
+D.................A or G or T
+H.................A or C or T
+V.................A or C or G
+N.................any base
+. or -............gap
+
+{
+    "A": "Adenine",
+    "C": "Cytosine",
+    "G": "Guanine",
+    "T": set(["T", "U"]),
+    "U": set(["T", "U"]),
+    "R": set(['A' , 'G']),
+    "Y": set(['C' , 'T']),
+    "S": set(['G' , 'C']),
+    "W": set(['A' , 'T']),
+    "K": set(['G' , 'T']),
+    "M": set(['A' , 'C']),
+    "B": set(['C' , 'G', 'T']),
+    "D": set(['A' , 'G', 'T']),
+    "H": set(['A' ,'C' , 'T']),
+    "V": set(['A' , 'C' , 'G']),
+    "N": set(['A' , 'C' , 'G', 'T']),
+    ".": "gap",
+    "-": "gap",
+}
