@@ -1,0 +1,5 @@
+numpy
+numba
+toolz
+pytest
+more_itertools
