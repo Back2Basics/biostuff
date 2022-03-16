@@ -31,11 +31,20 @@ class NASeq:  # for Nucleic Acid sequences (DNA/RNA) 4 letter alphabets
     # TODO: replace the 32 with the longest int register for this platform
     metadata = dict()
     seq_start = None
+    seq_len = None
 
     def __init__(self, **kwargs):
+        """
+        this takes a sequence and converts it to a sequence of 2 bit integers
+        using the groups_of_4 dictionary to convert the bases to integers
+        then stored in a numpy array of ints
+        :param kwargs:
+        """
+        self.seq_to_bases = None
+        self.bases_to_seq = None
         self.__dict__.update(kwargs)
         self.input_seq = kwargs.get("input_seq", '').upper()
-        self.base_seq_type = kwargs.get("base_seq_type", '').lower()  # dna_bases or rna_bases
+        self.base_seq_type = kwargs.get("base_seq_type", '').lower()  # "dna_bases" or "rna_bases"
         if not all([self.input_seq, self.base_seq_type]):
             raise ValueError(f"either input_seq or base_seq_type not specified. \n {how_to_use_args}")
         self.seq_len = len(self.input_seq)
@@ -43,11 +52,26 @@ class NASeq:  # for Nucleic Acid sequences (DNA/RNA) 4 letter alphabets
         self.set_seq_start()
         self.set_base_seq_type(self.base_seq_type)
 
-        self.input_seq = bytes(kwargs.get("input_seq", '').upper(), 'ascii')
+        self.input_seq = self.input_seq.encode('ascii')
         self.input_seq_with_leading_zeros = b'A' * self.seq_start + self.input_seq
-        # TODO: delete self.input_seq
-        # del self.input_seq
+        # take self.input_seq_with_leading_zeros in groups of 4 letters at a time in chunks
+
+        self.seq = self.seq_array(
+            base_seq_type='dna_bases',
+            bases_to_seq_or_seq_to_bases="bases_to_seq",
+            input_seq=self.input_seq_with_leading_zeros)
+
+        del self.input_seq
         # self.seq = self.convert_bases_to_seq(self.input_seq)
+
+    def seq_array(self,
+                  base_seq_type: str = 'dna_bases',
+                  bases_to_seq_or_seq_to_bases: str = "bases_to_seq",
+                  input_seq: str = ""):
+        return np.array(
+            [groups_of_4[base_seq_type][bases_to_seq_or_seq_to_bases][input_seq[i:i + 4]] for i in
+             range(0, self.seq_len, 4)],
+            dtype=np.uint8)
 
     def set_seq_start(self):
         # checked
@@ -91,7 +115,9 @@ class NASeq:  # for Nucleic Acid sequences (DNA/RNA) 4 letter alphabets
 
     def load_seq(self, filename: Path = Path("sequence.npz")):
         # checked
-        self.input_seq_with_leading_zeros = np.load(filename.absolute())
+        with np.load(filename) as data:
+            self.input_seq_with_leading_zeros = data['arr_0']
+        # self.input_seq_with_leading_zeros = np.load(filename.absolute())
 
     def __getitem__(self, i):
         if isinstance(i, slice):
