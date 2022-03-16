@@ -12,7 +12,7 @@ seq2base_map = {0: 'A', 1: 'C', 2: 'G', 3: 'T'}
 
 def build_numpy_array_with_ones(shape):
     """return a numpy array with 1's in the shape of shape"""
-
+    return np.ones(shape=shape)
 
 # create 8 bit lookup tables
 def build_seq_to_bases(base_seq_type):
@@ -23,11 +23,11 @@ def build_bases_to_seq_dict(base_seq_type):
     return {x: count for count, x in enumerate(build_seq_to_bases(base_seq_type))}
 
 
-four_dna_bases_to_seq_combos = build_bases_to_seq_dict(dna_bases)
-four_rna_bases_to_seq_combos = build_bases_to_seq_dict(rna_bases)
+four_dna_bases_to_seq_combos = build_bases_to_seq_dict(sorted(dna_bases))
+four_rna_bases_to_seq_combos = build_bases_to_seq_dict(sorted(rna_bases))
 
-np_seq_to_four_dna_bases_combos = build_seq_to_bases(dna_bases)
-np_seq_to_four_rna_bases_combos = build_seq_to_bases(rna_bases)
+np_seq_to_four_dna_bases_combos = build_seq_to_bases(sorted(dna_bases))
+np_seq_to_four_rna_bases_combos = build_seq_to_bases(sorted(rna_bases))
 
 groups_of_4 = {
     'dna_bases':

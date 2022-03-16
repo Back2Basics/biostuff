@@ -3,6 +3,17 @@ import pytest
 from biostuff.NASeq import *
 
 
+def test_groups_of_four():
+    input_seq_with_leading_zeros = b'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA'
+    seq_len = len(input_seq_with_leading_zeros)
+    seq = np.array(
+        [groups_of_4['dna_bases']['bases_to_seq'][input_seq_with_leading_zeros[i:i + 4]] for i in range(0, seq_len, 4)],
+        dtype=np.uint8)
+    seq.dtype = np.uint64
+    assert seq == 288230376151711744
+    # print(groups_of_4['dna_bases']['bases_to_seq'][b'AAAA'])
+
+
 def test_NASeq__repr__():
     seq = NASeq(input_seq='A', base_seq_type='dna_bases')
     assert f'NASeq({seq.base_seq_type} {seq.seq_len} bases long)' == seq.__repr__()
@@ -18,14 +29,15 @@ def test_set_base_seq_type():
 def test_set_seq_start_test():
     seq = NASeq(input_seq='A', base_seq_type='dna_bases')
     assert seq.seq_start == 31
-    seq = NASeq(input_seq="A"*20, base_seq_type='dna_bases')
+    seq = NASeq(input_seq="A" * 20, base_seq_type='dna_bases')
     assert seq.seq_start == 12
-    seq = NASeq(input_seq='A'*33, base_seq_type='dna_bases')
+    seq = NASeq(input_seq='A' * 33, base_seq_type='dna_bases')
     assert seq.seq_start == 31
-    seq = NASeq(input_seq='A'*33, base_seq_type='dna_bases')
+    seq = NASeq(input_seq='A' * 33, base_seq_type='dna_bases')
     assert not seq.seq_start == 30
-    seq = NASeq(input_seq='A'*65, base_seq_type='dna_bases', size=64)
+    seq = NASeq(input_seq='A' * 65, base_seq_type='dna_bases', size=64)
     assert seq.seq_start == 63
+
 
 def test_save_seq_and_load_seq():
     seq = NASeq(input_seq='AGA', base_seq_type='dna_bases')
@@ -36,19 +48,15 @@ def test_save_seq_and_load_seq():
     seq.save_seq(filename=filename)
     assert filename.exists()
     seq.load_seq(filename)
-    assert seq.input_seq == b'AGA'
+    assert seq.input_seq_with_leading_zeros == np.array(b'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGA', dtype='|S32')
     filename.unlink()
+
 
 def test_required_NASeq_elements():
     with pytest.raises(ValueError):
         seq = NASeq(input_seq='A')
     with pytest.raises(ValueError):
         seq = NASeq(dna_seq_bases='dna_bases')
-
-
-def test_NASeq_stuff():
-    seq = NASeq(input_seq='CA', base_seq_type="dna_bases")
-    assert seq.input_seq == b'CA'
 
 
 def test_NASeq_leading_zeroes():
